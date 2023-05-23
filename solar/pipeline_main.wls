@@ -28,7 +28,7 @@ SetDirectory[ParentDirectory@NotebookDirectory[]];
 
 (* ::Input:: *)
 (*(*close session*)*)
-(*DeleteObject[session]*)
+(*(*DeleteObject[session]*)*)
 
 
 (* ::Input:: *)
@@ -49,3 +49,54 @@ SetDirectory[ParentDirectory@NotebookDirectory[]];
 
 (* ::Input:: *)
 (*ImageDimensions@img*)
+
+
+(* ::Subsection:: *)
+(*Recognition*)
+
+
+(* ::Input:: *)
+(*ListDensityPlot[tf["result"],*)
+(*ColorFunction->"BlueGreenYellow",*)
+(*ImageSize->Small,*)
+(*ScalingFunctions->{None,"Reverse"},*)
+(*FrameTicks->{None, Automatic}]*)
+
+
+(* ::Input:: *)
+(*tf["result"]//Image//Thumbnail*)
+
+
+heatmap=Image@ArrayPlot[
+tf["result"],ColorFunction->"BlueGreenYellow",
+Frame->False,PlotRangePadding->None];
+
+Blend[{
+img,
+ImageResize[heatmap,ImageDimensions@img]},0.5]
+
+
+(* ::Input:: *)
+(*tf["threshold"]=Binarize@Threshold[*)
+(*Image[tf["result"]],0.7]*)
+
+
+(* ::Input:: *)
+(*kernel=BoxMatrix[1];*)
+(*tf["morp_open"]=Opening[tf["threshold"],kernel];*)
+(*tf["morp_close"]=Closing[tf["morp_open"],kernel];*)
+(*{tf["morp_open"],tf["morp_close"]}*)
+
+
+(* ::Input:: *)
+(*tf["mesh"]=ImageMesh@tf["morp_close"];*)
+(*tf["mesh_bounds"]=RegionBounds@tf["mesh"];*)
+(*tf["mesh_hull"]=ConvexHullMesh@tf["mesh"];*)
+(*tf["mesh_hull_coord"]=MeshCoordinates@tf["mesh_hull"];*)
+(*tf["mesh_hull_coord"]//Length*)
+
+
+(* ::Input:: *)
+(*Show[Image[tf["result"]],*)
+(*Graphics[{Red,tf["mesh_hull_coord"]/.{x_,y_}->Point[{x,y}]}]*)
+(*]*)
