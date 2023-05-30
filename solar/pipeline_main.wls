@@ -213,9 +213,9 @@ ImageResize[heatmap,ImageDimensions@img]},0.5]
 (*If[maxDis<th,*)
 (*{p1,p2},*)
 (*Join[*)
-(*Rest@RamerDouglasPeucker[*)
-(*pointsL[[;;maxMid]]//Prepend@Last@pointsL,th],*)
-(*Rest@RamerDouglasPeucker[pointsL[[maxMid;;]],th]*)
+(*(*make first point begining of the list*)*)
+(*RamerDouglasPeucker[pointsL[[;;maxMid]],th],*)
+(*Extract[{2;;-2}]@RamerDouglasPeucker[pointsL[[maxMid;;]]//Append@First@pointsL,th]*)
 (*]*)
 (*]]*)
 
