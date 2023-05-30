@@ -125,7 +125,28 @@ ImageResize[heatmap,ImageDimensions@img]},0.5]
 
 
 (* ::Input:: *)
-(*pointsCompare[Image[tf["result"]],{tf["corners_py"]->"Py",tf["corners_alg"]->"Own"}]*)
+(*tf["corners_fnd"]=ImageCorners[MorphologicalPerimeter@tf["morp_close"], 5,0,10,MaxFeatures->4]*)
+
+
+(* ::Input:: *)
+(*Manipulate[*)
+(*HighlightImage[Image@tf["result"],opt,*)
+(*ImageSize->Small],{opt,{*)
+(*tf["corners_py"]->"Py",*)
+(*tf["corners_alg"]->"Own",*)
+(*tf["corners_fnd"]->"Find"}},*)
+(*ControlPlacement->Top]*)
+
+
+(* ::Input:: *)
+(*SortedCorners[{{p0x_,_},{p1x_,_},{p2x_,_},{p3x_,_}}]:=And[p0x < p1x,p3x < p2x ,Abs[p1x - p2x] < Abs[p3x - p2x],Abs[p1x - p2x] < Abs[p0x - p1x]]*)
+(**)
+(*SortCorners[points_]:=First@Select[*)
+(*NestList[RotateLeft,points,3],SortedCorners]*)
+
+
+(* ::Input:: *)
+(*SortCorners@tf["corners_alg"]//Round*)
 
 
 (* ::Subsection:: *)
@@ -225,3 +246,14 @@ ImageResize[heatmap,ImageDimensions@img]},0.5]
 (*}]*)
 (*],{opt,data},*)
 (*ControlPlacement->Top]*)
+
+
+(* ::Input:: *)
+(*CameraMatrix[img_]:=Module[{height, width,center},*)
+(*{height, width}=ImageDimensions@img;*)
+(*center={height, width}/2;*)
+(*({*)
+(* {height, 0, center[[1]]},*)
+(* {0, height, center[[2]]},*)
+(* {0, 0, 1}*)
+(*})]*)
