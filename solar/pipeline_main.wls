@@ -11,6 +11,12 @@
 
 SetDirectory[ParentDirectory@NotebookDirectory[]];
 
+Get@*FindFile /@ {
+   "solar/functions.m",
+   "solar/bisection.wl", 
+   "solar/ramerdouglaspeucker.wls"
+   };
+
 
 (* ::Input:: *)
 (*RegisterExternalEvaluator["Python",*)
@@ -67,13 +73,14 @@ SetDirectory[ParentDirectory@NotebookDirectory[]];
 (*tf["result"]//Image//Thumbnail*)
 
 
-heatmap=Image@ArrayPlot[
-tf["result"],ColorFunction->"BlueGreenYellow",
-Frame->False,PlotRangePadding->None];
-
-Blend[{
-img,
-ImageResize[heatmap,ImageDimensions@img]},0.5]
+(* ::Input:: *)
+(*heatmap=Image@ArrayPlot[*)
+(*tf["result"],ColorFunction->"BlueGreenYellow",*)
+(*Frame->False,PlotRangePadding->None];*)
+(**)
+(*Blend[{*)
+(*img,*)
+(*ImageResize[heatmap,ImageDimensions@img]},0.5]*)
 
 
 (* ::Input:: *)
@@ -147,115 +154,3 @@ ImageResize[heatmap,ImageDimensions@img]},0.5]
 
 (* ::Input:: *)
 (*SortCorners@tf["corners_alg"]//Round*)
-
-
-(* ::Subsection:: *)
-(*Experimental*)
-
-
-(* ::Input:: *)
-(*Options[Bisection]={*)
-(*"Max"->50,"Tol"->0.01,"log"->True};*)
-(*Bisection[{a_,b_},test_,condition_,*)
-(*OptionsPattern[]]:=Module[*)
-(*{n=1,\[CapitalNu],mid,tol,aa=a,bb=b},*)
-(*(**)*)
-(*\!\(\*SubscriptBox[\(\[CapitalNu]\), \("\<max\>"\)]\)=OptionValue["Max"];*)
-(*tol=OptionValue["Tol"];*)
-(*While[n<\!\(\*SubscriptBox[\(\[CapitalNu]\), \("\<max\>"\)]\),*)
-(*mid=(aa+bb)/2;*)
-(*(*test*)*)
-(*If[*)
-(*test[aa,bb,mid],*)
-(*Return[N@mid]*)
-(*];*)
-(*If[OptionValue["log"],*)
-(*Print[n,"\[Rule]",N@mid," cond=",condition[aa,bb,mid]," test=",test[aa,bb,mid]]];*)
-(*(*condition*)*)
-(*If[condition[aa,bb,mid],*)
-(*aa=mid,*)
-(*bb=mid*)
-(*];*)
-(*n++];*)
-(*Message["max number of steps exceeded"];*)
-(*]*)
-
-
-(* ::Code:: *)
-(*(* transform between python opencv and wolfram*)*)
-(*reverseYAxis[ySize_][xy_]:=TransformationFunction[{*)
-(*{1,0,0},{0,-1,ySize},{0,0,1}}][xy]*)
-
-
-(* ::Text:: *)
-(*MeshRegion[*)
-(*reverseYAxis[224]/@MeshCoordinates@tf["mesh_hull"]//Polygon]*)
-(*convert from points back to mesh*)
-
-
-(* ::Text:: *)
-(*cv2.arcLength(points, closed=False)*)
-(*is same as ArcLength@Line@points*)
-(**)
-(*cv2.arcLength(points, closed=True)*)
-(*is same as Perimeter@tf["mesh_hull"]*)
-(**)
-
-
-(* ::Input:: *)
-(*RamerDouglasPeucker[{p1_,p2_},_]:={p1,p2}*)
-(*RamerDouglasPeucker[points_,th_,loop_:False]:=Module[*)
-(*{p1,p2,perpendicular,dist,maxPos},*)
-(*p1=First@points;*)
-(*p2=Last@points;*)
-(*perpendicular=Normalize[p2-p1] . RotationMatrix[90\[Degree]];*)
-(*dist=perpendicular . (#-p1)&/@points//Abs;*)
-(*maxPos=First@Ordering[dist,-1];*)
-(**)
-(*If[dist[[maxPos]]<th,*)
-(*{p1,p2},*)
-(*Join[*)
-(*RamerDouglasPeucker[points[[;;maxPos]],th],Rest@RamerDouglasPeucker[points[[maxPos;;]],th]]*)
-(*]*)
-(*]*)
-(*RamerDouglasPeucker[points_,th_,True]:=Module[{*)
-(*p1,p2,maxSrt,maxMid,dm,maxDis,pointsL},*)
-(*(*loop*)*)
-(*(*find 2 points with highest distance*)*)
-(*dm=DistanceMatrix@points;*)
-(*maxDis=Max@dm;*)
-(*{maxSrt,maxMid}=Sort[Position[dm,maxDis][[1]]];*)
-(**)
-(*(*make first point beginning of the list*)*)
-(*pointsL=RotateLeft[points,maxSrt-1];*)
-(*{maxSrt,maxMid}={1,maxMid-maxSrt+1};*)
-(*{p1,p2}=pointsL[[{maxSrt,maxMid}]];*)
-(**)
-(*If[maxDis<th,*)
-(*{p1,p2},*)
-(*Join[*)
-(*(*make first point beginning of the list*)*)
-(*RamerDouglasPeucker[pointsL[[;;maxMid]],th],*)
-(*Extract[{2;;-2}]@RamerDouglasPeucker[pointsL[[maxMid;;]]//Append@First@pointsL,th]*)
-(*]*)
-(*]]*)
-(*RamerDouglasPeucker[region_BoundaryMeshRegion,th_]:=RamerDouglasPeucker[MeshCoordinates@region,th,True]//Polygon//BoundaryMesh*)
-
-
-(* ::Input:: *)
-(**)
-(*pointsCompare[img_,data_:{{ls_List->name_String}..}]:=Manipulate[Show[img,Graphics[{Red,opt/.{x_,y_}->Point[{x,y}]*)
-(*}]*)
-(*],{opt,data},*)
-(*ControlPlacement->Top]*)
-
-
-(* ::Input:: *)
-(*CameraMatrix[img_]:=Module[{height, width,center},*)
-(*{height, width}=ImageDimensions@img;*)
-(*center={height, width}/2;*)
-(*({*)
-(* {height, 0, center[[1]]},*)
-(* {0, height, center[[2]]},*)
-(* {0, 0, 1}*)
-(*})]*)
