@@ -239,9 +239,11 @@ ImageResize[heatmap,ImageDimensions@img]},0.5]
 (*Extract[{2;;-2}]@RamerDouglasPeucker[pointsL[[maxMid;;]]//Append@First@pointsL,th]*)
 (*]*)
 (*]]*)
+(*RamerDouglasPeucker[region_BoundaryMeshRegion,th_]:=RamerDouglasPeucker[MeshCoordinates@region,th,True]//Polygon//BoundaryMesh*)
 
 
 (* ::Input:: *)
+(**)
 (*pointsCompare[img_,data_:{{ls_List->name_String}..}]:=Manipulate[Show[img,Graphics[{Red,opt/.{x_,y_}->Point[{x,y}]*)
 (*}]*)
 (*],{opt,data},*)
