@@ -11,6 +11,12 @@
 
 SetDirectory[ParentDirectory@NotebookDirectory[]];
 
+Get@*FindFile /@ {
+   "solar/functions.m",
+   "solar/bisection.wl", 
+   "solar/ramerdouglaspeucker.wls"
+   };
+
 
 (* ::Input:: *)
 (*RegisterExternalEvaluator["Python",*)
