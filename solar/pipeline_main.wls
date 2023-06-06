@@ -9,18 +9,16 @@
 (*Setup*)
 
 
-SetDirectory[ParentDirectory@NotebookDirectory[]];
+SetDirectory@ParentDirectory@NotebookDirectory[];
 
 Get@*FindFile /@ {
    "solar/functions.m",
    "solar/bisection.wl", 
    "solar/ramerdouglaspeucker.wl"
    };
-
-
-(* ::Input:: *)
-(*RegisterExternalEvaluator["Python",*)
-(*FileNameJoin[{$HomeDirectory,"miniconda3","python.exe"}]];*)
+(* python location *)
+RegisterExternalEvaluator["Python",
+FileNameJoin[{$HomeDirectory,"miniconda3","python.exe"}]];
 
 
 (* ::Subsection:: *)
@@ -41,14 +39,14 @@ Get@*FindFile /@ {
 (*tf=Association[];*)
 (**)
 (*tfModel[imgPath_String]:=tensorflow[*)
-(*FindFile[imgPath],FindFile["model/model_1.tflite"]]*)
+(*FindFile[imgPath],FindFile["data/solar/model_1.tflite"]]*)
 (*tf["model"]=tfModel;*)
 (**)
-(*tf["result"]=tfModel["data/IMG_0043.JPG"];*)
+(*tf["result"]=tfModel["data/solar/IMG_0043.JPG"];*)
 
 
 (* ::Input:: *)
-(*img=Import@FindFile["data/IMG_0043.JPG"];*)
+(*img=Import@FindFile["data/solar/IMG_0043.JPG"];*)
 (*tf["img"]=img;*)
 (*img//Thumbnail*)
 
@@ -105,8 +103,8 @@ Get@*FindFile /@ {
 
 (* ::Input:: *)
 (*Show[Image[tf["result"]],*)
-(*Graphics[{Red,tf["mesh_hull_coord"]/.{x_,y_}->Point[{x,y}]}]*)
-(*]*)
+(*Graphics[{Red,Point/@tf["mesh_hull_coord"]*)
+(*}]]*)
 
 
 (* ::Input:: *)
