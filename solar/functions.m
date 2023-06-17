@@ -11,14 +11,13 @@ reverseYAxis[ySize_][xy_] := TransformationFunction[{
   {1, 0, 0}, {0, -1, ySize}, {0, 0, 1}}][xy]
 
 PackageExport["CameraMatrix"]
-CameraMatrix[img_] := Module[{height, width, center},
-  {height, width} = ImageDimensions@img;
-  center = {height, width} / 2;
-  ({
-    {height, 0, center[[1]]},
-    {0, height, center[[2]]},
-    {0, 0, 1}
-  })]
+CameraMatrix[{width_, height_}] := {
+  {height, 0, height / 2},
+  {0, height, width / 2},
+  {0, 0, 1}
+}
+
+CameraMatrix[img_Image] := CameraMatrix[ImageDimensions@img]
 
 PackageExport["pointsCompare"]
 pointsCompare[img_, data_ : {{ls_List -> name_String}..}] :=
