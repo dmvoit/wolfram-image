@@ -31,17 +31,17 @@ RamerDouglasPeucker[points_, th_, loop_ : False] := Module[
 
 
 RamerDouglasPeucker[points_, th_, True] := Module[{
-  p1, p2, maxSrt, maxMid, dm, maxDis, pointsL},
+  p1, p2, maxStart, maxMid, dm, maxDis, pointsL},
   (*loop*)
   (*find 2 points with highest distance*)
   dm = DistanceMatrix@points;
   maxDis = Max@dm;
-  {maxSrt, maxMid} = Sort[Position[dm, maxDis][[1]]];
+  {maxStart, maxMid} = Sort[Position[dm, maxDis][[1]]];
 
   (*make first point beginning of the list*)
-  pointsL = RotateLeft[points, maxSrt - 1];
-  {maxSrt, maxMid} = {1, maxMid - maxSrt + 1};
-  {p1, p2} = pointsL[[{maxSrt, maxMid}]];
+  pointsL = RotateLeft[points, maxStart - 1];
+  {maxStart, maxMid} = {1, maxMid - maxStart + 1};
+  {p1, p2} = pointsL[[{maxStart, maxMid}]];
 
   If[maxDis < th,
     {p1, p2},
