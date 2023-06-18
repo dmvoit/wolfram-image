@@ -12,13 +12,13 @@ reverseYAxis[ySize_][xy_] := TransformationFunction[{
 
 PackageExport["CameraMatrix"]
 CameraMatrix::usage = "CameraMatrix approximation"
-CameraMatrix[{width_, height_}, scale : 1] := {
+CameraMatrix[{width_, height_}, scale_: 1] := {
   {scale * height, 0, width / 2},
   {0, scale * height, height / 2},
   {0, 0, 1}
 }
 
-CameraMatrix[img_Image, scale : 1] := CameraMatrix[ImageDimensions@img, scale]
+CameraMatrix[img_Image, scale_: 1] := CameraMatrix[ImageDimensions@img, scale]
 
 CameraMatrixOrientation[K_] := If[
   K[[1, 3]]/K[[2, 3]] > 1,

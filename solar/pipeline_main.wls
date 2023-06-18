@@ -2,7 +2,7 @@
 (* ::Package:: *)
 
 (* ::Section:: *)
-(*Solar Pipeline *)
+(*Pipeline *)
 
 
 (* ::Subsection:: *)
@@ -168,8 +168,8 @@ pointsAxis={
 {0,1,0},
 {0,0,1}};
 Kmat={
-{756,0,378},
-{0,756,504},
+{756,0,504},
+{0,756,378},
 {0,0,1}};
 (* same as Kmat=CameraMatrix[targetSize]*)
 targetSize=ImageDimensions@img/4
@@ -215,7 +215,80 @@ targetSize=ImageDimensions@img/4
 
 
 (* ::Subsection:: *)
-(*Some Date*)
+(*3D Camera*)
+
+
+(* ::Code:: *)
+(*Module[{P,R,t,cx,cy,K=Kmat,fx,fy},*)
+(*P=Inverse[K] . tf["proj_alg"]["TransformationMatrix"];*)
+(*{R,t} = SplitMatrix[P,{1;;3,4}];*)
+(*{cx,cy} = {K[[1,3]],K[[2,3]]};*)
+(*{fx,fy}={K[[1,1]],K[[2,2]]};*)
+(*Show[*)
+(*Graphics3D[{Blue,Line[{First@#,Last@#}&@pointsAxis]}],*)
+(*Graphics3D[{Orange,Polygon[pointsWorld]}],*)
+(*Graphics3D[CreatePyramid[t,{cx,cy}/{fx,fy},1]],*)
+(*PlotRange->{{-2,2},{-2,2},{0,3}},*)
+(*RotationAction->"Clip",Axes->True*)
+(*]*)
+(*]*)
+
+
+Module[{P,R,t,cx,cy,K=Kmat,fx,fy},
+P=Inverse[K] . tf["proj_alg"]["TransformationMatrix"];
+{R,t} = SplitMatrix[P,{1;;3,4}];
+(*R=RotationMatrix[90 Degree,{0,0,1}].R;*)
+{cx,cy} = {K[[1,3]],K[[2,3]]};
+{fx,fy}={K[[1,1]],K[[2,2]]};
+Show[
+Graphics3D[{Blue,Line[{First@#,Last@#}&@pointsAxis]}],
+Graphics3D[{Orange,Polygon[pointsWorld]}],
+Graphics3D[{Opacity[0.5],GeometricTransformation[
+CreatePyramid[{0,0,0},{cy,cx}/{fy,fx},1],
+TransformationFunction[
+	ArrayFlatten[{{-R,t},{0,1}}]]]}
+	],
+PlotRange->{{-2,2},{-2,2},{0,3}},Axes->True,
+RotationAction->"Clip"
+]]
+
+
+(* ::Code:: *)
+(*Camera[K_,P_]:=Module[{cx,cy,fx,fy,R,t},*)
+(*{cx,cy} = {K[[1,3]],K[[2,3]]};*)
+(*{fx,fy}={K[[1,1]],K[[2,2]]};*)
+(*{R,t} = SplitMatrix[P,{1;;3,4}];*)
+(*CreatePyramid[t,{cx,cy}/{fx,fy},1]]*)
+
+
+Module[{P,R,t,cx,cy,K=Kmat,fx,fy,trmat,res},
+P=Inverse[K] . tf["proj_alg"]["TransformationMatrix"];
+{R,t} = SplitMatrix[P,{1;;3,4}];
+(*R=RotationMatrix[90 Degree,{0,0,1}].R;*)
+{cx,cy} = {K[[1,3]],K[[2,3]]};
+{fx,fy}={K[[1,1]],K[[2,2]]};
+res=TransformationMatrix@RescalingTransform[
+{{0, 1}, {0, 1},{0,1}}];
+trmat=TransformationMatrix@TransformationFunction[
+	ArrayFlatten[{{-R,t},{0,1}}]];
+Framed[Show[
+Graphics3D[{Blue,Sphere[First@pointsWorld,0.05]}],
+Graphics3D[{Orange,Polygon[pointsWorld]}],
+PlotRange->{{-2,2},{-2,2},{0,3}},
+Axes->False,
+Background -> White,
+RotationAction->"Clip",
+ViewProjection->"Perspective",
+Boxed -> False,
+ImageSize->targetSize/4,
+ViewMatrix->{trmat,Automatic}
+],
+FrameStyle -> None,
+Background -> LightGray]]
+
+
+(* ::Subsection:: *)
+(*Some Data*)
 
 
 (* ::Input:: *)
@@ -249,3 +322,39 @@ targetSize=ImageDimensions@img/4
 
 (* ::Code:: *)
 (*P*)
+
+
+(* ::Subsection:: *)
+(*Camera*)
+
+
+Module[{TrMat,P,K,Rmat,t},
+TrMat=projFunc["TransformationMatrix"];
+K=CameraMatrix[{1008,756}];
+P=Inverse[K] . TrMat;
+{Rmat,t}=SplitMatrix[P,{1;;3,4}];
+t=t//Flatten;
+Show[Graphics3D[{
+Polygon[{{0,0,0},{0,1,0},{1,1,0},{1,0,0}}],
+(*camera position*)
+Red,
+Sphere[t*{1,1,-1},0.1]
+}],
+PlotRange->{{-2,2},{-2,2},{0,3}}]
+]
+
+
+Module[{TrMat,K,Rmat,t,P},
+TrMat=projFunc["TransformationMatrix"];
+K=CameraMatrix[{1008,756}];
+P=Inverse[K] . TrMat;
+{Rmat,t}=SplitMatrix[P,{1;;3,4}];
+t=t//Flatten;
+Show[Graphics3D[{
+Polygon[{{0,0,0},{0,1,0},{1,1,0},{1,0,0}}],
+(*camera position*)
+Red,
+Sphere[t*{1,1,-1},0.1]
+}],
+PlotRange->{{-2,2},{-2,2},{0,3}}]
+]
