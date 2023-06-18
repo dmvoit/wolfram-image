@@ -30,6 +30,8 @@ SplitMatrix::usage = "split matrix into columns/rows";
 CreateCube::usage = "create projected cube graphics primitives
 based on provided projection function";
 
+CreatePyramid::usage = "creates a pyramid in 3D space";
+
 Begin["`Private`"];
 
 DLTNormalizationMatrix[points_List] := Module[
@@ -235,6 +237,20 @@ FindHomography[pointsImage_, pointsWorld_, K_, "SVD"] :=
   PointsProjection[K, DecomposeHomography[H, Hnorm]]
   ];
 
+CreatePyramid[{{cx_} , {cy_} , {cz_}},
+  {px_ : 1, py_ : 1}, h_ : 1]:=CreatePyramid[{cx, cy, cz}, {px, py}, h]
+CreatePyramid[{cx_ : 0, cy_ : 0, cz_ : 0},
+  {px_ : 1, py_ : 1}, h_ : 1] := Module[
+  {cord},
+  (* Pyramid Base *)
+  cord = {
+    {cx - px, cy - py, cz - h},
+    {cx - px, cy + py, cz - h},
+    {cx + px, cy + py, cz - h},
+    {cx + px, cy - py, cz - h}
+  };
+  Pyramid[{Splice@cord, {cx, cy, cz}}]
+]
 
 End[];
 
