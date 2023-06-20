@@ -32,6 +32,9 @@ based on provided projection function";
 
 CreatePyramid::usage = "creates a pyramid in 3D space";
 
+CreateCamera::usage = "position a camera 3d space based on
+intrinsic and extrinsic parameters,";
+
 Begin["`Private`"];
 
 DLTNormalizationMatrix[points_List] := Module[
@@ -240,17 +243,39 @@ FindHomography[pointsImage_, pointsWorld_, K_, "SVD"] :=
 CreatePyramid[{{cx_} , {cy_} , {cz_}},
   {px_ : 1, py_ : 1}, h_ : 1]:=CreatePyramid[{cx, cy, cz}, {px, py}, h]
 CreatePyramid[{cx_ : 0, cy_ : 0, cz_ : 0},
-  {px_ : 1, py_ : 1}, h_ : 1] := Module[
-  {cord},
-  (* Pyramid Base *)
-  cord = {
-    {cx - px, cy - py, cz - h},
-    {cx - px, cy + py, cz - h},
-    {cx + px, cy + py, cz - h},
-    {cx + px, cy - py, cz - h}
-  };
-  Pyramid[{Splice@cord, {cx, cy, cz}}]
+  {px_ : 1, py_ : 1}, h_ : 1] := Pyramid[{
+  {cx - px, cy - py, cz + h},
+  {cx - px, cy + py, cz + h},
+  {cx + px, cy + py, cz + h},
+  {cx + px, cy - py, cz + h},
+  {cx, cy, cz}}
 ]
+
+
+CreateCamera[{K_, R_, t_}, scale_ : 1] :=
+    MapAt[GeometricTransformation[#, {Inverse@R, t}] &,
+      {Opacity[0.6], CreatePyramid[{0, 0, 0},
+        scale * {K[[1, 3]], K[[2, 3]]} / {K[[1, 1]], K[[2, 2]]}, scale],
+        Red, Arrow@{{0, 0, 0}, {Det[R], 0, 0}},
+        Green, Arrow@{{0, 0, 0}, {0, Det[R], 0}}
+      },
+      {{2}, {4}, {6}}
+    ]
+
+CreateCamera[img_Image, {K_, R_, t_}, scale_ : 1] :=
+ Module[{cam, base, photo, texture},
+  cam = CreateCamera[{K, R, t}, scale];
+  base = cam[[2, 1, 1, 1 ;; 4]];
+  texture = Texture@ImageReflect[
+     Thumbnail[img, Tiny, Padding -> None], Left];
+  photo = {
+    texture,
+    GeometricTransformation[
+     Polygon[base,
+      VertexTextureCoordinates -> RotateLeft@{{0, 0}, {1, 0}, {1, 1}, {0, 1}}],
+     cam[[2, 2]]]};
+  Append[cam, photo]
+  ]
 
 End[];
 
