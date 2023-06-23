@@ -35,6 +35,8 @@ CreatePyramid::usage = "creates a pyramid in 3D space";
 CreateCamera::usage = "position a camera 3d space based on
 intrinsic and extrinsic parameters,";
 
+GetViewDirection::usage = "get direction for ViewVector";
+
 Begin["`Private`"];
 
 DLTNormalizationMatrix[points_List] := Module[
@@ -276,6 +278,16 @@ CreateCamera[img_Image, {K_, R_, t_}, scale_ : 1] :=
      cam[[2, 2]]]};
   Append[cam, photo]
   ]
+
+
+GetViewDirection[P_, {cx_, cy_}] := Module[{Rp, tp, x1, x2, x3},
+  {Rp, tp} = SplitMatrix[P, {1 ;; 3, 4}];
+  Solve[{cx, cy, 1} == Rp . {x1, x2, x3} + tp, {x1, x2, x3}][[1, All,
+    2]]
+  ]
+GetViewDirection[P_, img_Image] :=
+ GetViewDirection[P, ImageDimensions@img/2]
+
 
 End[];
 
