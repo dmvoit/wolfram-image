@@ -102,7 +102,7 @@ SplitMatrix[mat_, "col"] :=
 
 
 DecomposeProjectionMatrix[mat_] := Module[
-  {K, R, t, P = mat, H, h, r180},
+  {K, R, t, P = mat, H, h, d},
 
   (* H=K.R  , h=-K.R.T *)
   {H, h} = SplitMatrix[P, {1 ;; 3, 4}];
