@@ -58,8 +58,8 @@ ToHom[ls : {Repeated[_?NumericQ, {2, 3}]}] := ls // Append@1;
 ToHom[ls : {Repeated[{_?NumericQ}, {2, 3}]}] := ls // Append@{1};
 ToHom[ls : {({_?NumericQ, _} | {_?NumericQ, _, _}) ..}] := ToHom /@ ls;
 
-FromHom[ls : {Repeated[_?NumericQ, {2, 3}]}] := Most@ls / Last@ls;
-FromHom[ls : {Repeated[{_?NumericQ}, {2, 3}]}] := Most@ls / First@Last@ls;
+FromHom[ls : {Repeated[_?NumericQ, {3, 4}]}] := Most@ls / Last@ls;
+FromHom[ls : {Repeated[{_?NumericQ}, {3, 4}]}] := Most@ls / First@Last@ls;
 FromHom[ls : {({_?NumericQ, _, _} | {_?NumericQ, _, _, _}) ..}] := FromHom /@ ls;
 
 CameraCalibration[imageP_, wordP_, "DLT"] := Module[
@@ -113,11 +113,12 @@ DecomposeProjectionMatrix[mat_] := Module[
 
   K = Inverse[K];
   K = K / K[[3, 3]];
-  If[K[[1,1]]<0,
-    r180 = RotationMatrix[180 Degree, {0, 0, 1}];
-    K = K.r180;
-    R = r180.R;
-  ];
+
+  (* force the diagonal elements of K to be positive *)
+  d = DiagonalMatrix@Sign@Diagonal[K];
+  K = K . d;
+  R = d . R;
+
   {K, -R, t}
 ];
 
