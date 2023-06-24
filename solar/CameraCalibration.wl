@@ -110,10 +110,15 @@ DecomposeProjectionMatrix[mat_] := Module[
 
   (*also t=FromHom@NullSpace[P] *)
   {R, K} = QRDecomposition[Inverse[H]];
-  (* rotate 180 deg to face the scene *)
-  (*r180=RotationMatrix[180 Degree,{0,0,1}];*)
+
   K = Inverse[K];
-  {K / K[[3, 3]], -R, t}
+  K = K / K[[3, 3]];
+  If[K[[1,1]]<0,
+    r180 = RotationMatrix[180 Degree, {0, 0, 1}];
+    K = K.r180;
+    R = r180.R;
+  ];
+  {K, -R, t}
 ];
 
 DecomposeHomography[H_] := Module[
@@ -257,7 +262,7 @@ CreatePyramid[{cx_ : 0, cy_ : 0, cz_ : 0},
 CreateCamera[{K_, R_, t_}, scale_ : 1] :=
     MapAt[GeometricTransformation[#, {Inverse@R, t}] &,
       {Opacity[0.6], CreatePyramid[{0, 0, 0},
-        scale * {K[[1, 3]], K[[2, 3]]} / {K[[1, 1]], K[[2, 2]]}, scale],
+        scale * {K[[2, 3]], K[[1, 3]]} / {K[[1, 1]], K[[2, 2]]}, scale],
         Red, Arrow@{{0, 0, 0}, {Det[R], 0, 0}},
         Green, Arrow@{{0, 0, 0}, {0, Det[R], 0}}
       },
